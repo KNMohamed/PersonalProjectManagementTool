@@ -1,6 +1,7 @@
 package com.example.ppmtool.web;
 
 import com.example.ppmtool.domain.Project;
+import com.example.ppmtool.services.MapValidationErrorService;
 import com.example.ppmtool.services.ProjectService;
 import com.fasterxml.jackson.core.JsonFactoryBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/project")
@@ -21,16 +24,15 @@ public class ProjectController {
     @Autowired
     private ProjectService projectService;
 
+    @Autowired
+    private MapValidationErrorService mapValidationErrorService;
+
     @PostMapping("")
     public ResponseEntity<?> createNewProject(@Valid @RequestBody Project project, BindingResult result){
-        if(result.hasErrors()){
-            return new ResponseEntity<String>("Invalid project object", HttpStatus.BAD_REQUEST);
-        }
 
-        result.getFieldErrors().stream().forEach(fieldError -> {
-            String field = fieldError.getField();
-            String errorMessage = fieldError.getDefaultMessage();
-        });
+        ResponseEntity<?> errorMap = mapValidationErrorService.mapValidationService(result);
+        if(errorMap != null) return errorMap;
+
         Project project1 = projectService.saveOrUpdateProject(project);
         return new ResponseEntity<Project>(project1, HttpStatus.CREATED);
     }
