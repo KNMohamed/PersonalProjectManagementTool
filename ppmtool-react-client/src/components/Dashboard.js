@@ -1,10 +1,15 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
+import Header from './Layout/Header';
+import Projectitem from './Project/ProjectItem';
 
 class Dashboard extends Component {
     render() {
         return (
-            <h1>Welcome to the Dashboard</h1>
-        )
+            <React.Fragment>
+                <Header/>
+                <Projectitem/>
+            </React.Fragment>
+        );
     }
 }
 
